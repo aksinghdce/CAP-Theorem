@@ -1,0 +1,95 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+
+\documentclass[11pt]{article} % use larger type; default would be 10pt
+\usepackage{svg}
+\usepackage{cite}
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+%%% Examples of Article customizations
+% These packages are optional, depending whether you want the features they provide.
+% See the LaTeX Companion or other references for full information.
+
+%%% PAGE DIMENSIONS
+\usepackage{geometry} % to change the page dimensions
+\geometry{a4paper} % or letterpaper (US) or a5paper or....
+% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+% \geometry{landscape} % set up the page for landscape
+%   read geometry.pdf for detailed page layout information
+
+\usepackage{graphicx} % support the \includegraphics command and options
+
+% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs} % for much better looking tables
+\usepackage{array} % for better arrays (eg matrices) in maths
+\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
+\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
+\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+% These packages are all incorporated in the memoir class to one degree or another...
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0pt} % customise the layout...
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+%%% END Article customizations
+
+%%% The "real" document content comes below...
+
+\title{Choosing Consistency Models}
+\author{Amit Kumar Singh}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+
+\section{Consistency requirements for WoW (World of Warcraft)}
+
+For massive multiplayer online role playing games like world of warcraft, data can be categorized based on the need for concistency associated with data. There are different consistency requirements for different category of data. One proposed categorization in terms of strong or weak consistency requirements is - user account data, game data, state data and log data ~\cite{diao2013consistency}. 
+
+In this response I will speak about the consistency requirements of game data and state data and will not talk about user data and log data. Later in the text I will categorically answer the following questions:
+
+\begin{enumerate}
+	\item What data consistency model will be suitable for World of Warcraft?
+	\item Would causal consistency be sufficient?
+	\item How would one implement causal consistency in a distributed system?
+\end{enumerate}
+
+\subsection{What data consistency model will be suitable for World of Warcraft?}
+\subsubsection{We can not have strict consistency!}
+In a massively multiplayer online role playing game (MMORPG), the game servers must be geographically spread to offer high availability for users around the globe. According to CAP theorem ~\cite{Brewer:2000:TRD:343477.343502} and given the fact that network partitioning is unavoidable, we need to accept a trade-off between C and A , that is, Consistency and Availability. Because we do not want to sacrifice availability we need to settle with weaker consistency than strict consistency \cite{nitzberg1991distributed}.
+
+\subsubsection{Total ordering is not practical!}
+Linearizability and Sequential consistency are too slow and an overkill because not every observer is observing every system-wide event and we do not need total ordering among all the potential system-wide events.
+
+\subsubsection{Causal consistency!}
+World of Warcraft is modeled as real world. Just like real world things happen concurrently in WoW and the principle of cause and effect governs what happens in the WoW as it does so in the real world too. So, a partial ordering of events using "happens-before" relationship should be sufficient ~\cite{lamport1978time}. 
+
+\subsection{Would causal consistency be sufficient?}
+No! not every consistency requirement needs to lack strict consistency. The user-account information must be maintained consistent. For such strict requirements, stronger consistency requirements must be met.
+
+\subsection{How would one implement causal consistency in distributed systems?}
+By using logical clocks as recommended by Leslie Lamport in his paper ~\cite{lamport1978time}
+
+\bibliography{References}{}
+\bibliographystyle{plain}
+\end{document}
